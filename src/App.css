@@ -15,7 +15,26 @@
   padding: 16px 18px;
   box-shadow: 0 10px 30px rgba(192, 132, 252, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.clear-btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, #ffe2f5, #e9e0ff);
+  color: #2b1230;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(167, 139, 250, 0.22);
+  transition: transform 0.08s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+.clear-btn:hover { filter: brightness(1.05); box-shadow: 0 10px 26px rgba(167,139,250,0.28); }
+.clear-btn:active { transform: translateY(1px); }
 .pastel-title { font-size: 24px; font-weight: 800; letter-spacing: 0.3px; margin: 0; }
 .pastel-subtitle { font-size: 13px; opacity: 0.9; margin: 4px 0 0; }
 

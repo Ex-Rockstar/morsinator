@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 const MORSE_MAP = {
@@ -50,22 +50,14 @@ function fromMorse(input) {
 function App() {
   const [text, setText] = useState('');
   const [morse, setMorse] = useState('');
-  const [pairs, setPairs] = useState({});
   const [mode, setMode] = useState('text-to-morse'); // auto-detected
-  const [backendOk, setBackendOk] = useState(true);
   const [copiedIn, setCopiedIn] = useState(false);
   const [copiedOut, setCopiedOut] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await fetch('/api/health');
-        setBackendOk(r.ok);
-      } catch {
-        setBackendOk(false);
-      }
-    })();
-  }, []);
+  async function handleClearAll() {
+    setText('');
+    setMorse('');
+  }
 
   function isLikelyMorse(val) {
     if (!val) return false;
@@ -73,19 +65,6 @@ function App() {
     if (!/^[.\-\/\s]+$/.test(val)) return false;
     // Check at least one dot or dash
     return /[.\-]/.test(val);
-  }
-
-  async function persistPair(plain, morseCode) {
-    if (!backendOk) return;
-    try {
-      await fetch('/api/conversions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: plain, morse: morseCode })
-      });
-    } catch {
-      setBackendOk(false);
-    }
   }
 
   async function handleTextChange(val) {
@@ -96,14 +75,10 @@ function App() {
       setMode('morse-to-text');
       const out = fromMorse(trimmed);
       setMorse(out);
-      setPairs(prev => ({ ...prev, [out]: trimmed }));
-      await persistPair(out, trimmed);
     } else {
       setMode('text-to-morse');
       const out = toMorse(trimmed);
       setMorse(out);
-      setPairs(prev => ({ ...prev, [trimmed]: out }));
-      await persistPair(trimmed, out);
     }
   }
 
@@ -123,8 +98,13 @@ function App() {
    return (
      <div className="pastel-shell">
       <header className="pastel-header">
-        <h1 className="pastel-title">{mode === 'text-to-morse' ? 'Morsinator' : 'Reversinator'}</h1>
-        <p className="pastel-subtitle">{mode === 'text-to-morse' ? 'Text → Morse' : 'Morse → Text'}</p>
+        <div className="header-left">
+          <h1 className="pastel-title">{mode === 'text-to-morse' ? 'Morsinator' : 'Reversinator'}</h1>
+          <p className="pastel-subtitle">{mode === 'text-to-morse' ? 'Text → Morse' : 'Morse → Text'}</p>
+        </div>
+        <div className="header-actions">
+          <button type="button" className="clear-btn" onClick={handleClearAll}>Clear All</button>
+        </div>
       </header>
 
       <main className="panel">
