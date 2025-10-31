@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 const MORSE_MAP = {
@@ -51,65 +51,94 @@ function App() {
   const [text, setText] = useState('');
   const [morse, setMorse] = useState('');
   const [pairs, setPairs] = useState({});
-  const [mode, setMode] = useState('text-to-morse'); // or 'morse-to-text'
+  const [mode, setMode] = useState('text-to-morse'); // auto-detected
+  const [backendOk, setBackendOk] = useState(true);
+  const [copiedIn, setCopiedIn] = useState(false);
+  const [copiedOut, setCopiedOut] = useState(false);
 
-  async function handleConvert() {
-    const trimmed = text.trim();
-    const out = toMorse(trimmed);
-    setMorse(out);
-    if (trimmed) {
-      setPairs(prev => ({ ...prev, [trimmed]: out }));
+  useEffect(() => {
+    (async () => {
       try {
-        await fetch('/api/conversions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: trimmed, morse: out })
-        });
-      } catch (e) {
-        // swallow network errors in UI
+        const r = await fetch('/api/health');
+        setBackendOk(r.ok);
+      } catch {
+        setBackendOk(false);
       }
+    })();
+  }, []);
+
+  function isLikelyMorse(val) {
+    if (!val) return false;
+    // Only dots, dashes, slashes and whitespace
+    if (!/^[.\-\/\s]+$/.test(val)) return false;
+    // Check at least one dot or dash
+    return /[.\-]/.test(val);
+  }
+
+  async function persistPair(plain, morseCode) {
+    if (!backendOk) return;
+    try {
+      await fetch('/api/conversions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: plain, morse: morseCode })
+      });
+    } catch {
+      setBackendOk(false);
     }
   }
 
-  async function handleReverse() {
-    const morseIn = text.trim();
-    const plain = fromMorse(morseIn);
-    setMorse(plain);
-    if (morseIn) {
-      setPairs(prev => ({ ...prev, [plain]: morseIn }));
-      try {
-        await fetch('/api/conversions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: plain, morse: morseIn })
-        });
-      } catch {}
+  async function handleTextChange(val) {
+    setText(val);
+    const trimmed = val.trim();
+    if (!trimmed) { setMorse(''); return; }
+    if (isLikelyMorse(trimmed)) {
+      setMode('morse-to-text');
+      const out = fromMorse(trimmed);
+      setMorse(out);
+      setPairs(prev => ({ ...prev, [out]: trimmed }));
+      await persistPair(out, trimmed);
+    } else {
+      setMode('text-to-morse');
+      const out = toMorse(trimmed);
+      setMorse(out);
+      setPairs(prev => ({ ...prev, [trimmed]: out }));
+      await persistPair(trimmed, out);
     }
+  }
+
+  async function copyToClipboard(value, which) {
+    try {
+      await navigator.clipboard.writeText(value);
+      if (which === 'in') {
+        setCopiedIn(true);
+        setTimeout(() => setCopiedIn(false), 1200);
+      } else if (which === 'out') {
+        setCopiedOut(true);
+        setTimeout(() => setCopiedOut(false), 1200);
+      }
+    } catch {}
   }
 
    return (
      <div className="pastel-shell">
-       <header className="pastel-header">
+      <header className="pastel-header">
         <h1 className="pastel-title">{mode === 'text-to-morse' ? 'Morsinator' : 'Reversinator'}</h1>
         <p className="pastel-subtitle">{mode === 'text-to-morse' ? 'Text → Morse' : 'Morse → Text'}</p>
       </header>
 
-       <main className="panel">
-         <div className="field">
+      <main className="panel">
+        <div className="field">
           <label htmlFor="input" className="label">{mode === 'text-to-morse' ? 'Input (Text)' : 'Input (Morse)'}</label>
           <textarea
             id="input"
             className="input"
             placeholder={mode === 'text-to-morse' ? 'Type your text here...' : 'Type Morse here (use space between letters, / between words)'}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => { handleTextChange(e.target.value); }}
             rows={4}
           />
-        </div>
-
-        <div className="actions">
-          <button className="btn" onClick={() => { setMode('text-to-morse'); handleConvert(); }}>Morse</button>
-          <button className="btn soft" onClick={() => { setMode('morse-to-text'); handleReverse(); }}>Reverse</button>
+          <button className={`copy-btn ${copiedIn ? 'copied' : ''}`} type="button" onClick={() => copyToClipboard(text, 'in')}>{copiedIn ? 'Copied!' : 'Copy'}</button>
         </div>
 
         <div className="field">
@@ -121,12 +150,13 @@ function App() {
             readOnly
             rows={4}
           />
+          <button className={`copy-btn ${copiedOut ? 'copied' : ''}`} type="button" onClick={() => copyToClipboard(morse, 'out')}>{copiedOut ? 'Copied!' : 'Copy'}</button>
         </div>
-       </main>
+      </main>
 
-       <footer className="pastel-footer"> -.-  means k </footer>
-     </div>
-   )
- }
+      <footer className="pastel-footer"> -.-  means k </footer>
+    </div>
+  )
+}
 
 export default App
