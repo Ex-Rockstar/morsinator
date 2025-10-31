@@ -1,0 +1,71 @@
+.pastel-shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding: 20px;
+  gap: 16px;
+}
+
+.pastel-header {
+  background: linear-gradient(135deg, rgba(255, 201, 236, 0.9), rgba(214, 197, 255, 0.9));
+  color: #2b1230;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 30px rgba(192, 132, 252, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.pastel-title { font-size: 24px; font-weight: 800; letter-spacing: 0.3px; margin: 0; }
+.pastel-subtitle { font-size: 13px; opacity: 0.9; margin: 4px 0 0; }
+
+.panel {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(167, 139, 250, 0.18);
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.field { display: grid; gap: 8px; }
+.label { font-weight: 700; font-size: 13px; color: #3b1350; }
+.input, .output {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  color: #2b1230;
+  padding: 12px 14px;
+  resize: vertical;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+.input::placeholder { color: #81628b; }
+.output { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; letter-spacing: 1.5px; }
+
+.actions { display: flex; gap: 10px; justify-content: center; }
+.btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, #ffd7ef, #e2d9ff);
+  color: #2b1230;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(167, 139, 250, 0.22);
+  transition: transform 0.08s ease, filter 0.2s ease;
+}
+.btn:hover { filter: brightness(1.04); }
+.btn:active { transform: translateY(1px); }
+.btn.soft { background: linear-gradient(135deg, #e8f7ff, #f9f9ff); }
+
+.pastel-footer { text-align: center; font-size: 12px; color: #5a3a6a; }
+
+@media (max-width: 560px) {
+  .pastel-shell { padding: 14px; }
+  .pastel-title { font-size: 20px; }
+}

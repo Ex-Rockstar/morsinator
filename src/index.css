@@ -1,0 +1,48 @@
+:root {
+   --pink-500: #ff79c6;
+   --pink-300: #ff9de2;
+   --purple-400: #c084fc;
+   --purple-500: #a78bfa;
+   --ink: #2b1230;
+   --ink2: #3b1350;
+   font-family: ui-sans-serif, system-ui, Avenir, Helvetica, Arial, sans-serif;
+   line-height: 1.5;
+   font-weight: 400;
+   color-scheme: light;
+   color: #2b1230;
+   background:
+     radial-gradient(1200px 800px at 10% 10%, rgba(255, 157, 226, 0.35), transparent 55%),
+     radial-gradient(1200px 800px at 90% 10%, rgba(167, 139, 250, 0.35), transparent 55%),
+     linear-gradient(180deg, #fde7f6 0%, #f6efff 100%);
+   font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+ }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+ a { color: var(--purple-500); text-decoration: none; }
+ a:hover { color: var(--purple-400); }
+
+ body {
+   margin: 0;
+   min-width: 320px;
+   min-height: 100vh;
+   overflow-x: hidden;
+ }
+
+ h1 { font-size: 3.2em; line-height: 1.1; }
+
+ button {
+   border-radius: 10px;
+   border: 1px solid rgba(0,0,0,0.05);
+   padding: 0.6em 1.2em;
+   font-size: 1em;
+   font-weight: 600;
+   font-family: inherit;
+   background-color: white;
+   cursor: pointer;
+ }
+
+/* No dark mode by default for this aesthetic; can be added later */
